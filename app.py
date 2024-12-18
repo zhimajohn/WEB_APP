@@ -9,6 +9,7 @@ import logging
 from playwright.async_api import async_playwright
 import asyncio
 import io
+from file_merger import merge_files
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -751,66 +752,23 @@ def merger():
             
         output_format = request.form.get('output_format', 'csv')
         
-        # 检查文件格式
+        # Check file formats
         allowed_extensions = {'.csv', '.xlsx', '.xls'}
         if not all(any(f.filename.lower().endswith(ext) for ext in allowed_extensions) 
                   for f in files):
             return 'Invalid file format. Only CSV and Excel files are supported.', 400
             
         try:
-            merged_data = []
-            for file in files:
-                # 获取文件扩展名
-                file_ext = os.path.splitext(file.filename)[1].lower()
-                
-                # 根据文件类型读取数据
-                if file_ext == '.csv':
-                    df = pd.read_csv(file)
-                else:  # Excel files
-                    df = pd.read_excel(file)
-                
-                # 添加来源文件列
-                df['Source_File'] = file.filename
-                # 调整列顺序
-                cols = ['Source_File'] + [col for col in df.columns if col != 'Source_File']
-                df = df[cols]
-                merged_data.append(df)
-            
-            # 合并所有数据
-            if merged_data:
-                merged_df = pd.concat(merged_data, ignore_index=True)
-                
-                # 根据选择的格式导出文件
-                if output_format == 'csv':
-                    # 导出为CSV
-                    output = io.StringIO()
-                    merged_df.to_csv(output, index=False)
-                    mem_file = io.BytesIO()
-                    mem_file.write(output.getvalue().encode('utf-8'))
-                    mem_file.seek(0)
-                    
-                    return send_file(
-                        mem_file,
-                        mimetype='text/csv',
-                        as_attachment=True,
-                        download_name='merged_files.csv'
-                    )
-                else:
-                    # 导出为Excel
-                    output = io.BytesIO()
-                    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                        merged_df.to_excel(writer, index=False, sheet_name='Merged Data')
-                    output.seek(0)
-                    
-                    return send_file(
-                        output,
-                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                        as_attachment=True,
-                        download_name='merged_files.xlsx'
-                    )
+            file_obj, filename, mimetype = merge_files(files, output_format)
+            return send_file(
+                file_obj,
+                mimetype=mimetype,
+                as_attachment=True,
+                download_name=filename
+            )
                 
         except Exception as e:
-            logging.error(f"Error in merger: {str(e)}")
+            logging.error(f"Error in merger route: {str(e)}")
             return f'Error processing files: {str(e)}', 400
             
     return render_template('merger.html')
