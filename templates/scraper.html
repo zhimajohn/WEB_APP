@@ -18,16 +18,18 @@
             <div class="tool-box">
                 <div class="upload-area">
                     <div class="dotted-border">
-                        <form method="post" enctype="multipart/form-data">
-                            <p>Upload a text file containing:</p>
-                            <ol>
-                                <li>Web address (URL)</li>
-                                <li>Username</li>
-                                <li>Password</li>
-                            </ol>
-                            <input type="file" name="file" accept=".txt">
-                            <button type="submit" class="start-button">Download File</button>
-                        </form>
+                        <div class="template-section">
+                            <p>First, download the template and fill in your credentials:</p>
+                            <a href="{{ url_for('download_template') }}" class="start-button">Download Template</a>
+                        </div>
+
+                        <div class="upload-section">
+                            <p>Then, upload your filled template:</p>
+                            <form method="post" enctype="multipart/form-data">
+                                <input type="file" name="file" accept=".xlsx,.xls">
+                                <button type="submit" class="start-button">Start Download</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -37,7 +39,7 @@
             </div>
             
             <div class="footer">
-                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
+                <p>Please contact the @Cathaya Data Team if you encounter any problems. Thanks.</p>
             </div>
         </div>
     </div>

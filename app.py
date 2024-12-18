@@ -10,19 +10,29 @@ from playwright.async_api import async_playwright
 import asyncio
 import io
 from file_merger import merge_files
+import zipfile
 
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+def ensure_download_dir(app):
+    """Ensure the download directory exists"""
+    download_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'downloads')
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir, exist_ok=True)
+    return download_dir
+
+# Initialize Flask app
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Change this to a secure random key
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-# Ensure upload folder exists
+# Ensure directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+ensure_download_dir(app)
 
 # Add user credentials (in a real application, use a database)
 USERS = {
@@ -615,11 +625,8 @@ def read_credentials(file_content):
         raise ValueError("The input file must have at least 3 lines: URL, username, and password.")
     return lines[0], lines[1], lines[2]
 
-async def download_csv_from_credentials(url, username, password):
-    download_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'downloads')
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-
+async def download_csv_from_credentials(url, username, password, download_dir):
+    """Download survey data using provided credentials"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(accept_downloads=True)
@@ -629,14 +636,18 @@ async def download_csv_from_credentials(url, username, password):
             await page.goto(url)
             await page.wait_for_load_state("networkidle")
 
+            # Fill login form
             username_selector = 'input[name="username"], input#username, input[type="text"]'
             password_selector = 'input[name="password"], input#password, input[type="password"]'
-
+            
             await page.fill(username_selector, username)
             await page.fill(password_selector, password)
             await page.click("#sign_in_button")
+
+            # Wait for login to complete
             await page.wait_for_url("**/admin.pl", timeout=10000)
-            
+
+            # Click download buttons
             await page.wait_for_selector("#download_data", timeout=5000)
             await page.click("#download_data")
             
@@ -645,8 +656,10 @@ async def download_csv_from_credentials(url, username, password):
                 await page.click("#download_completes")
             download = await download_info.value
             
+            # Save file
             file_path = os.path.join(download_dir, download.suggested_filename)
             await download.save_as(file_path)
+            
             return file_path
 
         finally:
@@ -664,39 +677,117 @@ def scraper():
         if file.filename == '':
             return 'No file selected', 400
             
-        if file and file.filename.endswith('.txt'):
+        if file and file.filename.endswith(('.xlsx', '.xls')):
             try:
-                file_content = file.read().decode('utf-8')
-                url, username, password = read_credentials(file_content)
+                # Read Excel file
+                df = pd.read_excel(file)
+                if len(df.columns) != 3:
+                    return 'Excel file must have exactly 3 columns: URL, Username, Password', 400
                 
-                # Run the scraper
-                file_path = asyncio.run(download_csv_from_credentials(url, username, password))
+                # Get download directory
+                download_dir = ensure_download_dir(app)
                 
-                if file_path and os.path.exists(file_path):
-                    return send_file(
-                        file_path,
-                        as_attachment=True,
-                        download_name=os.path.basename(file_path)
-                    )
+                # 清理旧的zip文件
+                zip_path = os.path.join(download_dir, 'downloaded_surveys.zip')
+                if os.path.exists(zip_path):
+                    try:
+                        os.remove(zip_path)
+                    except Exception as e:
+                        logging.error(f"Error removing old zip file: {str(e)}")
+                
+                # Start download process
+                results = []
+                successful_files = []
+                
+                for index, row in df.iterrows():
+                    url = str(row[0]).strip()
+                    username = str(row[1]).strip()
+                    password = str(row[2]).strip()
+                    
+                    try:
+                        file_path = asyncio.run(download_csv_from_credentials(
+                            url, username, password, download_dir))
+                        if os.path.exists(file_path):  # 验证文件是否成功下载
+                            results.append({
+                                'url': url,
+                                'status': 'success',
+                                'message': f'Downloaded to {os.path.basename(file_path)}'
+                            })
+                            successful_files.append(file_path)
+                        else:
+                            raise Exception("File download failed")
+                    except Exception as e:
+                        results.append({
+                            'url': url,
+                            'status': 'error',
+                            'message': str(e)
+                        })
+                
+                # 如果有成功下载的文件，创建zip文件
+                if successful_files:
+                    try:
+                        with zipfile.ZipFile(zip_path, 'w') as zipf:
+                            for file in successful_files:
+                                if os.path.exists(file):
+                                    zipf.write(file, os.path.basename(file))
+                        
+                        if os.path.exists(zip_path):  # 验证zip文件是否成功创建
+                            return render_template('scraper_results.html', 
+                                                results=results,
+                                                has_downloads=True)
+                        else:
+                            raise Exception("Failed to create zip file")
+                    except Exception as e:
+                        logging.error(f"Error creating zip file: {str(e)}")
+                        return render_template('scraper_results.html', 
+                                            results=results,
+                                            has_downloads=False)
                 else:
-                    return 'Failed to download file from the website', 400
+                    return render_template('scraper_results.html', 
+                                        results=results,
+                                        has_downloads=False)
                     
             except Exception as e:
                 logging.error(f"Error in scraper: {str(e)}")
                 return f'Error processing request: {str(e)}', 400
             finally:
-                # Clean up downloaded files
-                download_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'downloads')
-                if os.path.exists(download_dir):
-                    for file in os.listdir(download_dir):
-                        try:
-                            os.remove(os.path.join(download_dir, file))
-                        except:
-                            pass
+                # 清理单个下载的文件，保留zip文件
+                for file in successful_files:
+                    try:
+                        if os.path.exists(file):
+                            os.remove(file)
+                    except Exception as e:
+                        logging.error(f"Error removing file {file}: {str(e)}")
                 
-        return 'Invalid file type. Please upload a .txt file.', 400
+        return 'Invalid file type. Please upload an Excel file.', 400
         
     return render_template('scraper.html')
+
+# 添加新的路由用于下载ZIP文件
+@app.route('/download_surveys')
+@login_required
+def download_surveys():
+    try:
+        download_dir = ensure_download_dir(app)
+        zip_path = os.path.join(download_dir, 'downloaded_surveys.zip')
+        
+        if os.path.exists(zip_path):
+            try:
+                return send_file(
+                    zip_path,
+                    mimetype='application/zip',
+                    as_attachment=True,
+                    download_name='downloaded_surveys.zip'
+                )
+            except Exception as e:
+                logging.error(f"Error sending zip file: {str(e)}")
+                return f'Error sending file: {str(e)}', 500
+        else:
+            return 'No downloads available. Please try downloading the files again.', 404
+            
+    except Exception as e:
+        logging.error(f"Error in download_surveys: {str(e)}")
+        return f'Error downloading files: {str(e)}', 500
 
 # Modify the main route to show both options
 @app.route('/')
@@ -772,6 +863,39 @@ def merger():
             return f'Error processing files: {str(e)}', 400
             
     return render_template('merger.html')
+
+# 添加新的路由用于下载模板
+@app.route('/download_template')
+@login_required
+def download_template():
+    try:
+        # 创建一个新的 Excel 文件
+        df = pd.DataFrame(columns=['URL', 'Username', 'Password'])
+        
+        # 将 DataFrame 保存到内存中的 Excel 文件
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Credentials')
+            
+            # 获取 worksheet 对象
+            worksheet = writer.sheets['Credentials']
+            
+            # 调整列宽
+            worksheet.set_column('A:A', 40)  # URL 列宽
+            worksheet.set_column('B:C', 20)  # Username 和 Password 列宽
+            
+        output.seek(0)
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name='survey_credentials_template.xlsx'
+        )
+        
+    except Exception as e:
+        logging.error(f"Error creating template: {str(e)}")
+        return f'Error creating template: {str(e)}', 400
 
 if __name__ == '__main__':
     app.run(debug=True) 
