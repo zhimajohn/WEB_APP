@@ -726,10 +726,17 @@ def scraper():
                 # 如果有成功下载的文件，创建zip文件
                 if successful_files:
                     try:
-                        with zipfile.ZipFile(zip_path, 'w') as zipf:
+                        # 创建内存中的zip文件
+                        memory_file = io.BytesIO()
+                        with zipfile.ZipFile(memory_file, 'w') as zipf:
                             for file in successful_files:
                                 if os.path.exists(file):
                                     zipf.write(file, os.path.basename(file))
+                        
+                        # 保存zip文件到磁盘
+                        memory_file.seek(0)
+                        with open(zip_path, 'wb') as f:
+                            f.write(memory_file.getvalue())
                         
                         if os.path.exists(zip_path):  # 验证zip文件是否成功创建
                             return render_template('scraper_results.html', 
@@ -773,8 +780,14 @@ def download_surveys():
         
         if os.path.exists(zip_path):
             try:
+                # 读取zip文件到内存
+                with open(zip_path, 'rb') as f:
+                    memory_file = io.BytesIO(f.read())
+                memory_file.seek(0)
+                
+                # 发送文件
                 return send_file(
-                    zip_path,
+                    memory_file,
                     mimetype='application/zip',
                     as_attachment=True,
                     download_name='downloaded_surveys.zip'
@@ -782,6 +795,12 @@ def download_surveys():
             except Exception as e:
                 logging.error(f"Error sending zip file: {str(e)}")
                 return f'Error sending file: {str(e)}', 500
+            finally:
+                # 清理zip文件
+                try:
+                    os.remove(zip_path)
+                except:
+                    pass
         else:
             return 'No downloads available. Please try downloading the files again.', 404
             
