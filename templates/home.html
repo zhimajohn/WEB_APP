@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cathaya OE Coding Automation Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="content">
+            <h1>文件处理小工具</h1>
+            
+            <div class="tool-box">
+                <div class="upload-area">
+                    <div class="dotted-border">
+                        <div class="tool-options">
+                            <div class="tool-card">
+                                <h2>SPSS Syntax Generator</h2>
+                                <p>Generate SPSS syntax from your input files.</p>
+                                <a href="{{ url_for('spss_generator') }}" class="start-button">Go to SPSS Generator</a>
+                            </div>
+                            <div class="tool-card">
+                                <h2>Web Scraper</h2>
+                                <p>Download files from websites using credentials.</p>
+                                <a href="{{ url_for('scraper') }}" class="start-button">Go to Scraper</a>
+                            </div>
+                            <div class="tool-card">
+                                <h2>CSV Merger</h2>
+                                <p>Merge multiple CSV files into one with source tracking.</p>
+                                <a href="{{ url_for('merger') }}" class="start-button">Go to CSV Merger</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

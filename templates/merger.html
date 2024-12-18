@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Merger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="content">
+            <h1>File Merger</h1>
+            
+            <div class="tool-box">
+                <div class="upload-area">
+                    <div class="dotted-border">
+                        <form method="post" enctype="multipart/form-data">
+                            <p>Select multiple files to merge</p>
+                            <p class="sub-text">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+                            <input type="file" name="files[]" accept=".csv,.xlsx,.xls" multiple>
+                            <div class="format-selection">
+                                <p>Select output format:</p>
+                                <select name="output_format" class="format-select">
+                                    <option value="csv">CSV</option>
+                                    <option value="excel">Excel</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="start-button">Merge Files</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
+            </div>
+            
+            <div class="footer">
+                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

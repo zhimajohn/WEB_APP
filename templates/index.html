@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SPSS Syntax Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: #13141c;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .button-group-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .button-group-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tutorial-button {
+            background: #3498db;
+        }
+
+        .logout-button {
+            background: #e74c3c;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .upload-title {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .file-input-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #3498db;
+        }
+
+        button[type="submit"] {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #00ff9d, #00b8ff);
+            color: #13141c;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3);
+        }
+
+        .file-info {
+            margin-top: 10px;
+            color: #00ff9d;
+            font-size: 14px;
+            text-align: left;
+            padding-left: 10px;
+            visibility: hidden;  /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <div class="button-group-left">
+                <a href="{{ url_for('tutorial') }}" class="nav-button tutorial-button">Tutorial</a>
+            </div>
+            <div class="button-group-right">
+                <a href="{{ url_for('logout') }}" class="nav-button logout-button">Logout</a>
+            </div>
+            <h1>SPSS Syntax Generator</h1>
+        </div>
+        
+        <div class="upload-container">
+            <h2 class="upload-title">Upload file to generate SPSS syntax</h2>
+            <form method="post" enctype="multipart/form-data">
+                <div class="upload-area">
+                    <div class="file-input-container">
+                        <input type="file" name="file" accept=".txt" required id="file-input">
+                        <div class="file-info" id="file-info">No file selected</div>
+                    </div>
+                    <button type="submit">Generate Syntax</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add event listener to show selected file name
+        document.getElementById('file-input').addEventListener('change', function() {
+            const fileInfo = document.getElementById('file-info');
+            if (this.files && this.files[0]) {
+                fileInfo.textContent = `Selected file: ${this.files[0].name}`;
+                fileInfo.style.visibility = 'visible';
+            } else {
+                fileInfo.textContent = 'No file selected';
+                fileInfo.style.visibility = 'hidden';
+            }
+        });
+    </script>
+</body>
+</html> 

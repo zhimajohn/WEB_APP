@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SPSS Syntax Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="content">
+            <h1>Generated SPSS Syntax</h1>
+            
+            <div class="tool-box">
+                <div class="dotted-border">
+                    <div class="syntax-box">
+                        <div class="syntax-title">Generated SPSS Syntax</div>
+                        <pre><code>{{ syntax }}</code></pre>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="copyToClipboard()" class="start-button">Copy to Clipboard</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <a href="{{ url_for('spss_generator') }}" class="start-button">Generate Another</a>
+                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
+            </div>
+            
+            <div class="footer">
+                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const syntaxText = document.querySelector('pre code').innerText;
+            navigator.clipboard.writeText(syntaxText)
+                .then(() => alert('Copied to clipboard!'))
+                .catch(err => console.error('Failed to copy:', err));
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tutorial - SPSS Syntax Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: #13141c;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tutorial-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tutorial-step {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .tutorial-step h2 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tutorial-step p {
+            color: #ffffff;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .tutorial-image {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 8px;
+            margin: 15px auto;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <a href="{{ url_for('upload_file') }}" class="back-button">← Back to Generator</a>
+        
+        <div class="steps-container">
+            <div class="tutorial-step">
+                <h2>Step 1:</h2>
+                <img src="{{ url_for('static', filename='tutorial/step1.png') }}" alt="Export Survey" class="tutorial-image">
+                <p></p>
+            </div>
+
+            <div class="tutorial-step">
+                <h2>Step 2:</h2>
+                <img src="{{ url_for('static', filename='tutorial/step2.png') }}" alt="Locate File" class="tutorial-image">
+                <p></p>
+            </div>
+
+            <div class="tutorial-step">
+                <h2>Step 3:</h2>
+                <img src="{{ url_for('static', filename='tutorial/step3.png') }}" alt="Upload and Generate" class="tutorial-image">
+                <p></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
