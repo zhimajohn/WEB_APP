@@ -916,5 +916,26 @@ def download_template():
         logging.error(f"Error creating template: {str(e)}")
         return f'Error creating template: {str(e)}', 400
 
+@app.route('/download_all')
+@login_required
+def download_all():
+    # 创建一个ZIP文件包含所有下载的文件
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zf:
+        for result in session.get('download_results', []):
+            if result.get('success'):
+                filename = result.get('filename')
+                file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+                if os.path.exists(file_path):
+                    zf.write(file_path, filename)
+    
+    memory_file.seek(0)
+    return send_file(
+        memory_file,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name='all_files.zip'
+    )
+
 if __name__ == '__main__':
     app.run(debug=True) 
