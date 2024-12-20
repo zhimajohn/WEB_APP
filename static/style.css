@@ -63,7 +63,7 @@ body {
     z-index: 1;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 80px 20px 100px;
+    padding: 120px 20px 100px;
     flex: 1;
     width: 100%;
 }
@@ -154,11 +154,13 @@ h1 {
     display: inline-block;
     background-color: #34C759;
     color: white;
-    padding: 12px 24px;
+    padding: 12px 0;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 500;
     transition: background-color 0.3s ease;
+    width: 200px;
+    text-align: center;
 }
 
 .start-button:hover {

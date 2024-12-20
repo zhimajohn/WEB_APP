@@ -13,35 +13,72 @@
         </div>
         
         <div class="content">
+            <div class="back-button-container">
+                <a href="{{ url_for('home') }}" class="back-button">Back</a>
+            </div>
+            
             <h1>Web Scraper</h1>
             
-            <div class="tool-box">
-                <div class="upload-area">
-                    <div class="dotted-border">
-                        <div class="template-section">
-                            <p>First, download the template and fill in your credentials:</p>
+            <div class="merger-box">
+                <div class="merger-area">
+                    <form method="post" enctype="multipart/form-data" class="merger-form">
+                        <div class="merger-left">
+                            <div class="drop-zone">
+                                <span class="drop-text">Drag and Drop or <span class="select-text">Select Files</span></span>
+                                <input type="file" name="file" class="file-input" accept=".xlsx,.xls">
+                            </div>
+                        </div>
+                        
+                        <div class="merger-right">
                             <a href="{{ url_for('download_template') }}" class="start-button">Download Template</a>
+                            <button type="submit" class="start-button">START</button>
                         </div>
-
-                        <div class="upload-section">
-                            <p>Then, upload your filled template:</p>
-                            <form method="post" enctype="multipart/form-data">
-                                <input type="file" name="file" accept=".xlsx,.xls">
-                                <button type="submit" class="start-button">Start Download</button>
-                            </form>
-                        </div>
-                    </div>
+                    </form>
                 </div>
-            </div>
-            
-            <div class="nav-buttons">
-                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
-            </div>
-            
-            <div class="footer">
-                <p>Please contact the @Cathaya Data Team if you encounter any problems. Thanks.</p>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.querySelector('.drop-zone');
+            const fileInput = document.querySelector('.file-input');
+            const dropText = document.querySelector('.drop-text');
+
+            // 点击上传区域触发文件选择
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // 显示选中的文件
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    dropText.textContent = fileName;
+                }
+            });
+
+            // 拖放功能
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drop-zone-over');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drop-zone-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drop-zone-over');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    const fileName = e.dataTransfer.files[0].name;
+                    dropText.textContent = fileName;
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
