@@ -13,46 +13,43 @@
         </div>
         
         <div class="content">
+            <div class="back-button-container">
+                <a href="{{ url_for('scraper') }}" class="back-button">Back</a>
+            </div>
+            
             <h1>Download Results</h1>
             
-            <div class="tool-box">
-                <div class="dotted-border">
+            <div class="merger-box">
+                <div class="merger-area">
+                    <div class="download-all">
+                        <a href="{{ url_for('download_all') }}" class="start-button">Download All Files</a>
+                    </div>
+                    
                     <div class="results-section">
                         <table class="results-table">
                             <thead>
                                 <tr>
                                     <th>URL</th>
                                     <th>Status</th>
-                                    <th>Message</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for result in results %}
-                                <tr class="{{ 'success' if result.status == 'success' else 'error' }}">
+                                <tr class="{{ 'success' if result.success else 'error' }}">
                                     <td>{{ result.url }}</td>
                                     <td>{{ result.status }}</td>
-                                    <td>{{ result.message }}</td>
+                                    <td>
+                                        {% if result.success %}
+                                        <a href="{{ url_for('download_file', filename=result.filename) }}" class="download-link">Download</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                    
-                    <div class="nav-buttons">
-                        {% if has_downloads %}
-                        <a href="{{ url_for('download_surveys') }}" class="start-button">Download All Files</a>
-                        {% endif %}
-                        <a href="{{ url_for('scraper') }}" class="start-button">Back to Uploader</a>
-                    </div>
                 </div>
-            </div>
-            
-            <div class="nav-buttons">
-                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
-            </div>
-            
-            <div class="footer">
-                <p>Please contact the @Cathaya Data Team if you encounter any problems. Thanks.</p>
             </div>
         </div>
     </div>
