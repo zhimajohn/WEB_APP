@@ -3,6 +3,47 @@
 <head>
     <title>File Merger</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.querySelector('.drop-zone');
+            const fileInput = document.querySelector('.file-input');
+            const dropText = document.querySelector('.drop-text');
+
+            // 点击上传区域触发文件选择
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // 显示选中的文件
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    const fileCount = fileInput.files.length;
+                    dropText.textContent = `${fileCount} file(s) selected`;
+                }
+            });
+
+            // 拖放功能
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drop-zone-over');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drop-zone-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drop-zone-over');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    const fileCount = fileInput.files.length;
+                    dropText.textContent = `${fileCount} file(s) selected`;
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="main-container">
@@ -16,31 +57,32 @@
             <h1>File Merger</h1>
             
             <div class="tool-box">
-                <div class="upload-area">
-                    <div class="dotted-border">
-                        <form method="post" enctype="multipart/form-data">
-                            <p>Select multiple files to merge</p>
-                            <p class="sub-text">Supported formats: CSV, Excel (.xlsx, .xls)</p>
-                            <input type="file" name="files[]" accept=".csv,.xlsx,.xls" multiple>
-                            <div class="format-selection">
-                                <p>Select output format:</p>
-                                <select name="output_format" class="format-select">
+                <div class="merger-area">
+                    <form method="post" enctype="multipart/form-data" class="merger-form">
+                        <div class="merger-left">
+                            <div class="drop-zone">
+                                <span class="drop-text">Drag and Drop or <span class="select-text">Select Files</span></span>
+                                <input type="file" name="files[]" multiple class="file-input" accept=".csv,.xlsx,.xls">
+                            </div>
+                        </div>
+                        
+                        <div class="merger-right">
+                            <div class="format-select">
+                                <select name="output_format" class="format-dropdown">
+                                    <option value="" disabled selected>Brand Types</option>
                                     <option value="csv">CSV</option>
                                     <option value="excel">Excel</option>
                                 </select>
                             </div>
-                            <button type="submit" class="start-button">Merge Files</button>
-                        </form>
-                    </div>
+                            
+                            <button type="submit" class="start-button">START</button>
+                        </div>
+                    </form>
                 </div>
             </div>
             
             <div class="nav-buttons">
                 <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
-            </div>
-            
-            <div class="footer">
-                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
             </div>
         </div>
     </div>

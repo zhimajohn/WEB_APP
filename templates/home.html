@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cathaya OE Coding Automation Platform</title>
+    <title>Cathaya Data  Tool Platform</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -13,7 +13,7 @@
         </div>
         
         <div class="content">
-            <h1>文件处理小工具</h1>
+            <h1>Data Processing Tools</h1>
             
             <div class="tool-box">
                 <div class="upload-area">
@@ -25,12 +25,12 @@
                                 <a href="{{ url_for('spss_generator') }}" class="start-button">Go to SPSS Generator</a>
                             </div>
                             <div class="tool-card">
-                                <h2>Web Scraper</h2>
+                                <h2>Survey Data Downloader</h2>
                                 <p>Download files from websites using credentials.</p>
                                 <a href="{{ url_for('scraper') }}" class="start-button">Go to Scraper</a>
                             </div>
                             <div class="tool-card">
-                                <h2>CSV Merger</h2>
+                                <h2>Files Merger</h2>
                                 <p>Merge multiple CSV files into one with source tracking.</p>
                                 <a href="{{ url_for('merger') }}" class="start-button">Go to CSV Merger</a>
                             </div>
