@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SPSS Syntax Result</title>
+    <title>Generated SPSS Syntax</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -13,38 +13,35 @@
         </div>
         
         <div class="content">
+            <div class="back-button-container">
+                <a href="{{ url_for('home') }}" class="back-button">Back</a>
+            </div>
+            
             <h1>Generated SPSS Syntax</h1>
             
             <div class="tool-box">
-                <div class="dotted-border">
-                    <div class="syntax-box">
-                        <div class="syntax-title">Generated SPSS Syntax</div>
-                        <pre><code>{{ syntax }}</code></pre>
+                <div class="syntax-box">
+                    <div class="syntax-header">
+                        <span class="syntax-title">Generated SPSS Syntax</span>
+                        <button class="copy-button" onclick="copySyntax()">Copy to Clipboard</button>
                     </div>
-                    <div class="action-buttons">
-                        <button onclick="copyToClipboard()" class="start-button">Copy to Clipboard</button>
-                    </div>
+                    <pre><code>{{ syntax }}</code></pre>
                 </div>
-            </div>
-            
-            <div class="nav-buttons">
-                <a href="{{ url_for('spss_generator') }}" class="start-button">Generate Another</a>
-                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
-            </div>
-            
-            <div class="footer">
-                <p>Please contact the @Cathaya Data Team if you encounter any problems.Thanks.</p>
             </div>
         </div>
     </div>
 
     <script>
-        function copyToClipboard() {
-            const syntaxText = document.querySelector('pre code').innerText;
-            navigator.clipboard.writeText(syntaxText)
-                .then(() => alert('Copied to clipboard!'))
-                .catch(err => console.error('Failed to copy:', err));
-        }
+    function copySyntax() {
+        const syntaxText = document.querySelector('.syntax-box pre code').textContent;
+        navigator.clipboard.writeText(syntaxText).then(() => {
+            const button = document.querySelector('.copy-button');
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy to Clipboard';
+            }, 2000);
+        });
+    }
     </script>
 </body>
 </html> 

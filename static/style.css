@@ -240,14 +240,38 @@ h1 {
     position: relative;
 }
 
-.syntax-title {
+/* 语法框顶部栏 */
+.syntax-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: #34C759;
     color: white;
     padding: 10px 20px;
     margin: -20px -20px 15px -20px;
     border-radius: 12px 12px 0 0;
+}
+
+.syntax-title {
     font-weight: 500;
     font-size: 14px;
+}
+
+/* 复制按钮样式 */
+.copy-button {
+    background-color: white;
+    color: #34C759;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+    background-color: #f0f0f0;
 }
 
 /* 结果表格：控制下载结果显示的表格样式 */
@@ -396,52 +420,4 @@ h1 {
 
 .back-button:hover {
     background-color: #2FB750;
-}
-
-/* 登录框样式 */
-.login-box {
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #34C759;
-}
-
-.error-message {
-    color: #ff3b30;
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #ffebee;
-    border-radius: 6px;
-}
-
-.login-form .start-button {
-    width: 100%;
-    margin-top: 10px;
 }
