@@ -55,7 +55,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        if username in app.config.get('USERS', USERS) and app.config.get('USERS', USERS)[username] == password:
+        if username == 'admin' and password == 'cathaya':
             session['logged_in'] = True
             return redirect(url_for('home'))
         else:

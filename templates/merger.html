@@ -54,9 +54,12 @@
         </div>
         
         <div class="content">
+            <div class="back-button-container">
+                <a href="{{ url_for('home') }}" class="back-button">Back</a>
+            </div>
             <h1>File Merger</h1>
             
-            <div class="tool-box">
+            <div class="merger-box">
                 <div class="merger-area">
                     <form method="post" enctype="multipart/form-data" class="merger-form">
                         <div class="merger-left">
@@ -79,10 +82,6 @@
                         </div>
                     </form>
                 </div>
-            </div>
-            
-            <div class="nav-buttons">
-                <a href="{{ url_for('home') }}" class="start-button">Back to Home</a>
             </div>
         </div>
     </div>
