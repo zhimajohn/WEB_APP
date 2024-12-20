@@ -402,8 +402,8 @@ h1 {
 /* 返回按钮容器 */
 .back-button-container {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 40px;  /* 统一调整顶部距离 */
+    left: 40px;  /* 统一调整左侧距离 */
 }
 
 /* 返回按钮样式 */
@@ -420,4 +420,35 @@ h1 {
 
 .back-button:hover {
     background-color: #2FB750;
+}
+
+/* SPSS Generator 页面样式 */
+.spss-form {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.spss-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;  /* 控制上传区域的最大宽度 */
+}
+
+.spss-upload .start-button {
+    width: 200px;  /* 控制按钮宽度 */
+}
+
+/* 文件名显示样式 */
+.drop-zone.has-file {
+    border-color: #34C759;
+    background-color: rgba(52, 199, 89, 0.05);
+}
+
+.drop-zone.has-file .drop-text {
+    color: #34C759;
+    font-weight: 500;
 }
